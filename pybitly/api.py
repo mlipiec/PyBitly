@@ -93,27 +93,27 @@ class Api(object):
         return short_url_list[0]
 
     def expand(self, urls=None):
-        return_list, params, long_url_list = False, '', []
+        return_list, params, long_url_list = self._check_if_list(urls), '', []
 
-        if not isinstance(urls, basestring) and isinstance(urls, list) and len(urls):
-            return_list = True
+        if return_list:
             for url in urls:
                 params += urllib.urlencode({'shortUrl': url}) + '&'
         else:
             params += urllib.urlencode({'shortUrl': urls}) + '&'
 
         params += urllib.urlencode({'access_token': self.access_token})
-
         response_data = self._open_url(API_EXPAND_URL + "?" + params)
-
         json_data = simplejson.loads(response_data.read())
 
-        for exp in json_data['data']['expand']:
-            errors = exp.get('error', None)
-            if errors:
-                long_url_list.append(errors)
-            else:
-                long_url_list.append(exp.get('long_url'))
+        if len(json_data['data']):
+            for exp in json_data['data']['expand']:
+                errors = exp.get('error', None)
+                if errors:
+                    long_url_list.append(errors)
+                else:
+                    long_url_list.append(exp.get('long_url'))
+        else:
+            long_url_list.append(json_data['status_txt'])
 
         if not return_list:
             return long_url_list[0]
