@@ -44,6 +44,9 @@ class Api(object):
         else:
             return response
 
+    def _check_if_list(self, param=None):
+        return not isinstance(param, basestring) and isinstance(param, list)
+
     def get_access_token(self):
         auth_data = {
             'client_secret': self.password,
@@ -58,26 +61,41 @@ class Api(object):
         return response_data.read()
 
     def shorten(self, urls=None, domain=None):
-        params = {
-            'access_token': self.access_token,
-            'longUrl': urls
-        }
+        return_list, short_url_list, params = self._check_if_list(urls), [], dict()
+
+        params['access_token'] = self.access_token
         if not domain is None:
             params['domain'] = domain
 
-        response_data = self._open_url(API_SHORTEN_URL + "?" + urllib.urlencode(params))
+        if return_list:
+            for url in urls:
+                params['longUrl'] = url
+                response_data = self._open_url(API_SHORTEN_URL + "?" + urllib.urlencode(params))
+                json_data = simplejson.loads(response_data.read())
 
-        json_data = simplejson.loads(response_data.read())
+                if json_data['data']:
+                    short_url_list.append(json_data['data']['url'])
+                else:
+                    short_url_list.append(json_data['status_txt'])
+        else:
+            params['longUrl'] = urls
+            response_data = self._open_url(API_SHORTEN_URL + "?" + urllib.urlencode(params))
+            json_data = simplejson.loads(response_data.read())
 
-        if json_data['data']:
-            return json_data['data']['url']
+            if json_data['data']:
+                short_url_list.append(json_data['data']['url'])
+            else:
+                short_url_list.append(json_data['status_txt'])
 
-        return json_data['status_txt']
+        if return_list:
+            return short_url_list
+
+        return short_url_list[0]
 
     def expand(self, urls=None):
-        return_list, params = False, ''
+        return_list, params, long_url_list = False, '', []
 
-        if not isinstance(urls, basestring) and isinstance(urls, list):
+        if not isinstance(urls, basestring) and isinstance(urls, list) and len(urls):
             return_list = True
             for url in urls:
                 params += urllib.urlencode({'shortUrl': url}) + '&'
@@ -89,7 +107,6 @@ class Api(object):
         response_data = self._open_url(API_EXPAND_URL + "?" + params)
 
         json_data = simplejson.loads(response_data.read())
-        long_url_list = []
 
         for exp in json_data['data']['expand']:
             errors = exp.get('error', None)
