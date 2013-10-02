@@ -8,11 +8,11 @@ config = {
     'author': 'Marcin Lipiec',
     'url': 'http://pypi.python.org/pypi/PyBitly/',
     'author_email': 'marcin.lipiec@yamatai.pl',
-    'version': '0.1.0',
+    'version': '0.1.1',
     'install_requires': ['simplejson'],
     'packages': ['pybitly', 'pybitly.test'],
     'name': 'PyBitly',
-    'license': 'LICENSE.txt',
+    'license': 'GNU GENERAL PUBLIC LICENSE Version 3',
     'long_description': open('README.txt').read(),
 }
 

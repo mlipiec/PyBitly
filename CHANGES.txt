@@ -1,1 +1,2 @@
-v0.1, 2013-10-01 -- Initial release. Added shorten and expand method.
+v0.1.0, 2013-10-01 -- Initial release. Added shorten and expand method.
+v0.1.1, 2013-10-02 -- Now you can pass list of URLs to shorten.

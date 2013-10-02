@@ -18,6 +18,10 @@ Usage::
     >>> api.shorten("http://www.wp.pl", "j.mp")
     'http://j.mp/VjQJi1'
 
+    You can also shorten list of URLs:
+    >>> api.shorten(["http://wp.pl", "http://onet.pl"], "j.mp")
+    ['http://j.mp/VjTksh', 'http://j.mp/19lCwGx']
+
     If there is a problem, you will see:
     >>> api.shorten("BAD LINK", "j.mp")
     'INVALID_URI'
